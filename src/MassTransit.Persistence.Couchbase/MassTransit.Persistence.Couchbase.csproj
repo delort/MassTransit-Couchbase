@@ -72,7 +72,7 @@
   <ItemGroup>
     <Compile Include="CouchbaseSagaRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StateJsonConverter.cs" />
+    <Compile Include="AutomatonymousStateJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MassTransit.Persistence.Couchbase.nuspec" />

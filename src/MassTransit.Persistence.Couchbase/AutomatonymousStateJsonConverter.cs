@@ -7,12 +7,12 @@
 
     using Newtonsoft.Json;
 
-    public class StateJsonConverter<TSaga> : JsonConverter
+    public class AutomatonymousStateJsonConverter<TSaga> : JsonConverter
         where TSaga : StateMachine
     {
         private readonly TSaga saga;
 
-        public StateJsonConverter(TSaga machine)
+        public AutomatonymousStateJsonConverter(TSaga machine)
         {
             this.saga = machine;
         }

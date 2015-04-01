@@ -116,6 +116,7 @@ Target "Package" (fun _ ->
                 Version = projectConfig.Version
                 AccessKey = getBuildParamOrDefault "nugetkey" ""
                 Publish = hasBuildParam "nugetkey"
+                //TODO: Read dependencies from project.json
                 Dependencies = [
                     "Automatonymous", "1.2.8"
                     "Common.Logging", "3.0.0"

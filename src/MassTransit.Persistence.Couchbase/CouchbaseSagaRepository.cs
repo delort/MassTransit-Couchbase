@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Transactions;
 
@@ -15,9 +16,11 @@
     using MassTransit.Exceptions;
     using MassTransit.Pipeline;
     using MassTransit.Saga;
+    using MassTransit.Serialization;
     using MassTransit.Util;
 
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Converters;
 
     public class CouchbaseSagaRepository<TInstance, TSaga> : ISagaRepository<TInstance>
         where TInstance : class, ISaga
@@ -42,7 +45,17 @@
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     ObjectCreationHandling = ObjectCreationHandling.Auto,
                     ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                    Converters = new JsonConverter[] { new StateJsonConverter<TSaga>(saga) }
+                    ContractResolver = new JsonContractResolver(),
+                    DateParseHandling = DateParseHandling.None,
+                    Converters = new List<JsonConverter>(new JsonConverter[]
+                            {
+                                new AutomatonymousStateJsonConverter<TSaga>(saga),
+                                new ByteArrayConverter(), 
+                                new IsoDateTimeConverter
+                                    {
+                                        DateTimeStyles = DateTimeStyles.RoundtripKind
+                                    }
+                            }),
                 };
 
             this.cluster.Configuration.DeserializationSettings = new JsonSerializerSettings
@@ -52,7 +65,20 @@
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     ObjectCreationHandling = ObjectCreationHandling.Auto,
                     ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                    Converters = new JsonConverter[] { new StateJsonConverter<TSaga>(saga) }
+                    ContractResolver = new JsonContractResolver(),
+                    DateParseHandling = DateParseHandling.None,
+                    Converters = new List<JsonConverter>(new JsonConverter[]
+                            {
+                                new AutomatonymousStateJsonConverter<TSaga>(saga),
+                                new ByteArrayConverter(), 
+                                new ListJsonConverter(),
+                                new InterfaceProxyConverter(),
+                                new StringDecimalConverter(),
+                                new IsoDateTimeConverter
+                                    {
+                                        DateTimeStyles = DateTimeStyles.RoundtripKind
+                                    },
+                            })
                 };
         }
 
