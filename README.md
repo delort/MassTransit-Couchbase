@@ -27,7 +27,7 @@ Install NuGet package:
 
 ##Configure
 
-Add similar code to Autofac Bootstrapper:
+Add similar code to Autofac module:
 ```c#
 using Autofac
 ...
