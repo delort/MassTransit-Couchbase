@@ -1,21 +1,24 @@
-#r @"packages\FSharp.Data\lib\net40\FSharp.Data.dll"
-#r @"packages\FAKE\tools\FakeLib.dll"
+#r "packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+#r "packages/FAKE/tools/FakeLib.dll"
+#r "System.Xml.Linq.dll"
 
 open Fake
 open System.IO
 open System.Xml
+open System.Xml.Linq
 open FSharp.Data
 
 let (+/) firstPath secondPath = Path.Combine(firstPath, secondPath)
 
 let outputPath = "./out/"
-let packagingPath = "./nuget/"
+let packagingPath = "./build/"
 
 type ProjectConfigurationType = JsonProvider<"./src/MassTransit.Persistence.Couchbase/project.json">
 
 let projectConfigurations =
     dict [
-        ("./src/MassTransit.Persistence.Couchbase/", ProjectConfigurationType.Load("./src/MassTransit.Persistence.Couchbase/project.json"));
+        ("./src/MassTransit.Persistence.Couchbase/",
+            ProjectConfigurationType.Load("./src/MassTransit.Persistence.Couchbase/project.json"));
         ]
 
 Target "ListTargets" (fun _ ->
@@ -57,6 +60,7 @@ open Fake.XMLHelper
 Target "LogConfigUpdate" (fun _ ->
     for KeyValue(projectRoot, projectConfig) in projectConfigurations do
         let logConfigFileName = projectRoot +/ "log4net.config"
+
         if File.Exists(logConfigFileName) then
             let logConfigFile = string(logConfigFileName)
             let logConfigOriginal = new XmlDocument() in
@@ -98,7 +102,7 @@ Target "Package" (fun _ ->
         let productPackagingPath = packagingPath +/ projectConfig.Product
         let libNet45BuildPath = "./src/" +/ projectConfig.Product +/ "bin/net45/"
         let libNet45PackagePath = packagingPath +/ projectConfig.Product +/ "lib/net45/"
-        
+
         CleanDirs [libNet45PackagePath]
 
         CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Product + ".dll")
@@ -116,16 +120,7 @@ Target "Package" (fun _ ->
                 Version = projectConfig.Version
                 AccessKey = getBuildParamOrDefault "nugetkey" ""
                 Publish = hasBuildParam "nugetkey"
-                //TODO: Read dependencies from project.json
-                Dependencies = [
-                    "Automatonymous", "1.2.8"
-                    "Common.Logging", "3.0.0"
-                    "Common.Logging.Core", "3.0.0"
-                    "CouchbaseNetClient", "2.0.3"
-                    "Magnum", "2.1.3"
-                    "MassTransit", "2.9.9"
-                    "Newtonsoft.Json", "6.0.6"
-                ]
+                Dependencies = getDependencies (projectRoot +/ "packages.config")
                 Files = [
                     (("**\*.*"), None, None)
                 ]
