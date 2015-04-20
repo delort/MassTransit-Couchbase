@@ -1,4 +1,4 @@
-﻿namespace MassTransit.Persistence.Couchbase
+﻿namespace MassTransit.Persistence.Couchbase.Converters
 {
     using System;
     using System.Globalization;

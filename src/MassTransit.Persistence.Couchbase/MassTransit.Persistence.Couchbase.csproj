@@ -34,28 +34,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Automatonymous">
-      <HintPath>..\..\..\MDOPublishing\src\NuGetPackages\Automatonymous.1.2.8\lib\net40\Automatonymous.dll</HintPath>
+      <HintPath>..\..\packages\Automatonymous.1.2.8\lib\net40\Automatonymous.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging, Version=3.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
+      <HintPath>..\..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="Couchbase.NetClient, Version=2.0.2.0, Culture=neutral, PublicKeyToken=05e9c6b5a9ec94c2, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CouchbaseNetClient.2.0.3\lib\net45\Couchbase.NetClient.dll</HintPath>
+      <HintPath>..\..\packages\CouchbaseNetClient.2.0.3\lib\net45\Couchbase.NetClient.dll</HintPath>
     </Reference>
     <Reference Include="Magnum">
-      <HintPath>..\packages\Magnum.2.1.3\lib\NET40\Magnum.dll</HintPath>
+      <HintPath>..\..\packages\Magnum.2.1.3\lib\NET40\Magnum.dll</HintPath>
     </Reference>
     <Reference Include="MassTransit">
-      <HintPath>..\packages\MassTransit.2.9.9\lib\net40\MassTransit.dll</HintPath>
+      <HintPath>..\..\packages\MassTransit.2.9.9\lib\net40\MassTransit.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,13 +66,16 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Taskell">
-      <HintPath>..\..\..\MDOPublishing\src\NuGetPackages\Taskell.0.1.2\lib\net40\Taskell.dll</HintPath>
+      <HintPath>..\..\packages\Taskell.0.1.2\lib\net40\Taskell.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CouchbaseSagaRepository.cs" />
+    <Compile Include="Configuration\ICouchbaseSagaRepositorySettings.cs" />
+    <Compile Include="Configuration\BucketFactory.cs" />
+    <Compile Include="DefaultCouchbaseSagaRepositorySettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AutomatonymousStateJsonConverter.cs" />
+    <Compile Include="Converters\AutomatonymousStateJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MassTransit.Persistence.Couchbase.nuspec" />

@@ -1,12 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>@project@</id>
+        <id>@title@</id>
+        <title>@title@</title>
         <version>@build.number@</version>
         <authors>@authors@</authors>
         <owners>@authors@</owners>
+        <copyright>@copyright@</copyright>
+        <releaseNotes>@releaseNotes@</releaseNotes>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>@description@</description>
+        <licenseUrl>https://raw.githubusercontent.com/sergef/MassTransit-Couchbase/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/sergef/MassTransit-Couchbase</projectUrl>
+        <tags>@tags@</tags>
         @dependencies@
         @references@
     </metadata>

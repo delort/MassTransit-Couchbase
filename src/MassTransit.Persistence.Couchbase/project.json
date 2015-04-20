@@ -1,10 +1,12 @@
 ﻿{
     "title": "MassTransit.Persistence.Couchbase",
     "description": "Couchbase persistent storage for MassTransit Sagas",
-    "product": "MassTransit.Persistence.Couchbase",
+    "releaseNotes" : "TBD",
+    "product": "MassTransit",
+    "authors": [ "Serge Fomin" ],
     "company": "MassTransit",
     "copyright": "Copyright © Serge Fomin 2015",
-    "version": "1.0.6",
-    "buildArtifacts": [ "bin", "obj" ],
-    "authors": [ "Serge Fomin" ]
+    "version": "1.0.10",
+    "tags": "MassTransit ServiceBus Couchbase NoSql dotnet .net",
+    "buildArtifacts": [ "bin", "obj" ]
 }

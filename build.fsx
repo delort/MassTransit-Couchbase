@@ -1,5 +1,5 @@
-#r "packages/FSharp.Data/lib/net40/FSharp.Data.dll"
-#r "packages/FAKE/tools/FakeLib.dll"
+#r @"build\FSharp.Data\lib\net40\FSharp.Data.dll"
+#r @"build\FAKE\tools\FakeLib.dll"
 #r "System.Xml.Linq.dll"
 
 open Fake
@@ -10,9 +10,6 @@ open FSharp.Data
 
 let (+/) firstPath secondPath = Path.Combine(firstPath, secondPath)
 
-let outputPath = "./out/"
-let packagingPath = "./build/"
-
 type ProjectConfigurationType = JsonProvider<"./src/MassTransit.Persistence.Couchbase/project.json">
 
 let projectConfigurations =
@@ -21,19 +18,40 @@ let projectConfigurations =
             ProjectConfigurationType.Load("./src/MassTransit.Persistence.Couchbase/project.json"));
         ]
 
+let testProjectConfigurations =
+    [
+        "./src/MassTransit.Persistence.Couchbase.Tests/"
+    ]
+    
+let prereqPackageConfigurations =
+    dict [
+        ]
+
+let outputPath = "./out/"
+let packagingPath = "./build/"
+        
 Target "ListTargets" (fun _ ->
     listTargets()
 )
 
 Target "Clean" (fun _ ->
-    DeleteDir "./src/NuGetPackages"
+    DeleteDir "./packages"
     DeleteDir outputPath
-    DeleteDir packagingPath
     CreateDir outputPath
-    CreateDir packagingPath
 
     for KeyValue(projectRoot, projectConfig) in projectConfigurations do
         for path in projectConfig.BuildArtifacts do DeleteDir(projectRoot +/ path)
+)
+
+open Fake.NuGetHelper
+
+Target "CreatePrerequisitePackages" (fun _ ->
+    for KeyValue(packageWorkDir, packageNuSpec) in prereqPackageConfigurations do
+        NuGet (fun p ->
+            {p with 
+                OutputPath = outputPath
+                WorkingDir = packageWorkDir})
+            packageNuSpec
 )
 
 open Fake.AssemblyInfoFile
@@ -60,7 +78,6 @@ open Fake.XMLHelper
 Target "LogConfigUpdate" (fun _ ->
     for KeyValue(projectRoot, projectConfig) in projectConfigurations do
         let logConfigFileName = projectRoot +/ "log4net.config"
-
         if File.Exists(logConfigFileName) then
             let logConfigFile = string(logConfigFileName)
             let logConfigOriginal = new XmlDocument() in
@@ -75,6 +92,58 @@ Target "LogConfigUpdate" (fun _ ->
                     projectConfig.Product
                     logConfigOriginal
             logConfigUpdated.Save logConfigFile
+)
+
+open Fake.RestorePackageHelper
+
+Target "RestorePackages" (fun _ ->
+    RestorePackages()
+)
+
+open Fake.XUnit2Helper
+
+Target "TestAll" (fun _ ->
+    for testProject in testProjectConfigurations do
+        !! (testProject +/ "bin" +/ "*.Tests.dll") 
+            |> xUnit2 (fun p -> {p with OutputDir = testProject })
+)
+
+open Fake.NuGetHelper
+
+Target "Package" (fun _ ->
+    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
+        let nuspecPath = projectRoot +/ (projectConfig.Title + ".nuspec")
+        if File.Exists(nuspecPath) then
+            let productPackagingPath = packagingPath +/ projectConfig.Title
+            let libNet45BuildPath = projectRoot +/ "bin/net45/"
+            let libNet45PackagePath = packagingPath +/ projectConfig.Title +/ "lib/net45/"
+
+            CleanDirs [libNet45PackagePath]
+
+            CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".dll")
+            CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".pdb")
+            CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".xml")
+            CopyFiles productPackagingPath ["README.md"; "LICENSE.txt"]
+
+            NuGet (fun p -> 
+                {p with
+                    Title = projectConfig.Title
+                    Authors = projectConfig.Authors |> Array.toList
+                    Project = projectConfig.Product
+                    ReleaseNotes = projectConfig.ReleaseNotes
+                    Copyright = projectConfig.Copyright
+                    Description = projectConfig.Description
+                    OutputPath = outputPath
+                    WorkingDir = productPackagingPath
+                    Version = projectConfig.Version
+                    AccessKey = getBuildParamOrDefault "nugetkey" ""
+                    Publish = hasBuildParam "nugetkey"
+                    Dependencies = getDependencies (projectRoot +/ "packages.config")
+                    Files = [
+                        (("**\*.*"), None, None)
+                    ]
+                })
+                    nuspecPath
 )
 
 Target "BuildAll" (fun _ ->
@@ -95,44 +164,16 @@ Target "BuildAll" (fun _ ->
         |> DoNothing
 )
 
-open Fake.NuGetHelper
-
-Target "Package" (fun _ ->
-    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
-        let productPackagingPath = packagingPath +/ projectConfig.Product
-        let libNet45BuildPath = "./src/" +/ projectConfig.Product +/ "bin/net45/"
-        let libNet45PackagePath = packagingPath +/ projectConfig.Product +/ "lib/net45/"
-
-        CleanDirs [libNet45PackagePath]
-
-        CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Product + ".dll")
-        CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Product + ".pdb")
-        CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Product + ".xml")
-        CopyFiles productPackagingPath ["README.md"; "LICENSE.txt"]
-
-        NuGet (fun p -> 
-            {p with
-                Authors = projectConfig.Authors |> Array.toList
-                Project = projectConfig.Product
-                Description = projectConfig.Description
-                OutputPath = outputPath
-                WorkingDir = productPackagingPath
-                Version = projectConfig.Version
-                AccessKey = getBuildParamOrDefault "nugetkey" ""
-                Publish = hasBuildParam "nugetkey"
-                Dependencies = getDependencies (projectRoot +/ "packages.config")
-                Files = [
-                    (("**\*.*"), None, None)
-                ]
-            })
-                "./src/MassTransit.Persistence.Couchbase/MassTransit.Persistence.Couchbase.nuspec"
-)
-
 "Clean"
-    //==> "CreatePrerequisitePackages"
+    ==> "CreatePrerequisitePackages"
     ==> "AssemblyInfo"
     ==> "LogConfigUpdate"
+    ==> "RestorePackages"
     ==> "BuildAll"
+
+"TestAll"
+
+"BuildAll"
     ==> "Package"
 
 RunTargetOrDefault "ListTargets"

@@ -3,15 +3,15 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitleAttribute("MassTransit.Persistence.Couchbase")]
-[assembly: AssemblyProductAttribute("MassTransit.Persistence.Couchbase")]
+[assembly: AssemblyProductAttribute("MassTransit")]
 [assembly: AssemblyCompanyAttribute("MassTransit")]
 [assembly: AssemblyDescriptionAttribute("Couchbase persistent storage for MassTransit Sagas")]
 [assembly: AssemblyCopyrightAttribute("Copyright © Serge Fomin 2015")]
-[assembly: AssemblyVersionAttribute("1.0.5")]
-[assembly: AssemblyFileVersionAttribute("1.0.5")]
+[assembly: AssemblyVersionAttribute("1.0.10")]
+[assembly: AssemblyFileVersionAttribute("1.0.10")]
 [assembly: ComVisibleAttribute(false)]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "1.0.5";
+        internal const string Version = "1.0.10";
     }
 }
