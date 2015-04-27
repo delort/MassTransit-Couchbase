@@ -1,4 +1,4 @@
-# MassTransit-Couchbase
+# MassTransit-Couchbase [![Build Status](https://travis-ci.org/sergef/MassTransit-Couchbase.svg)](https://travis-ci.org/sergef/MassTransit-Couchbase)
 
 Couchbase persistent storage implementation for MassTransit.
 
