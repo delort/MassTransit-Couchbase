@@ -7,6 +7,7 @@
 
     using MassTransit.Persistence.Couchbase.Configuration;
     using MassTransit.Persistence.Couchbase.Converters;
+    using MassTransit.Persistence.Couchbase.Resolvers;
     using MassTransit.Serialization;
 
     using Newtonsoft.Json;
@@ -25,7 +26,7 @@
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     ObjectCreationHandling = ObjectCreationHandling.Auto,
                     ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                    ContractResolver = new JsonContractResolver(),
+                    ContractResolver = new NotImplementedSafeContractResolver(),
                     DateParseHandling = DateParseHandling.None,
                     Converters = new List<JsonConverter>(new JsonConverter[]
                         {
@@ -45,7 +46,7 @@
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     ObjectCreationHandling = ObjectCreationHandling.Auto,
                     ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                    ContractResolver = new JsonContractResolver(),
+                    ContractResolver = new NotImplementedSafeContractResolver(),
                     DateParseHandling = DateParseHandling.None,
                     Converters = new List<JsonConverter>(new JsonConverter[]
                         {

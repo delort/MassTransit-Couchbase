@@ -15,18 +15,18 @@
             string designDocumentName,
             string designDocumentBody)
         {
-            var bucket = CreateBucket(
-                cluster,
-                bucketName,
-                username,
-                password);
+            ////TODO: Having code that depends on the underlying runtime is considered to be bad coding style,
+            ////but sometimes such code is necessary to work around runtime bugs. 
+            var isMonoRuntime = Type.GetType("Mono.Runtime") != null;
 
-            CreateDesignDocument(
-                bucket,
-                username,
-                password,
-                designDocumentName,
-                designDocumentBody);
+            if (isMonoRuntime)
+            {
+                return cluster.OpenBucket(bucketName);
+            }
+
+            var bucket = CreateBucket(cluster, bucketName, username, password);
+
+            CreateDesignDocument(bucket, username, password, designDocumentName, designDocumentBody);
 
             return bucket;
         }

@@ -76,6 +76,7 @@
     <Compile Include="DefaultCouchbaseSagaRepositorySettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Converters\AutomatonymousStateJsonConverter.cs" />
+    <Compile Include="Resolvers\NotImplementedSafeContractResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MassTransit.Persistence.Couchbase.nuspec" />
