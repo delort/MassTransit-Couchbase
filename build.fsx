@@ -1,11 +1,12 @@
-#r @"build\FSharp.Data\lib\net40\FSharp.Data.dll"
-#r @"build\FAKE\tools\FakeLib.dll"
-#r "System.Xml.Linq.dll"
+#I @"build/FAKE/tools"
+#I @"build/FSharp.Data/lib/net40"
+
+#r @"FakeLib.dll"
+#r @"FSharp.Data.dll"
 
 open Fake
 open System.IO
 open System.Xml
-open System.Xml.Linq
 open FSharp.Data
 
 let (+/) firstPath secondPath = Path.Combine(firstPath, secondPath)
@@ -22,14 +23,14 @@ let testProjectConfigurations =
     [
         "./src/MassTransit.Persistence.Couchbase.Tests/"
     ]
-    
+
 let prereqPackageConfigurations =
     dict [
         ]
 
 let outputPath = "./out/"
 let packagingPath = "./build/"
-        
+
 Target "ListTargets" (fun _ ->
     listTargets()
 )
@@ -48,7 +49,7 @@ open Fake.NuGetHelper
 Target "CreatePrerequisitePackages" (fun _ ->
     for KeyValue(packageWorkDir, packageNuSpec) in prereqPackageConfigurations do
         NuGet (fun p ->
-            {p with 
+            {p with
                 OutputPath = outputPath
                 WorkingDir = packageWorkDir})
             packageNuSpec
@@ -104,7 +105,7 @@ open Fake.XUnit2Helper
 
 Target "TestAll" (fun _ ->
     for testProject in testProjectConfigurations do
-        !! (testProject +/ "bin" +/ "*.Tests.dll") 
+        !! (testProject +/ "bin" +/ "*.Tests.dll")
             |> xUnit2 (fun p -> {p with OutputDir = testProject })
 )
 
@@ -121,11 +122,13 @@ Target "Package" (fun _ ->
             CleanDirs [libNet45PackagePath]
 
             CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".dll")
-            CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".pdb")
             CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".xml")
             CopyFiles productPackagingPath ["README.md"; "LICENSE.txt"]
 
-            NuGet (fun p -> 
+            if File.Exists((libNet45BuildPath +/ projectConfig.Title + ".pdb")) then
+                CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".pdb")
+
+            NuGet (fun p ->
                 {p with
                     Title = projectConfig.Title
                     Authors = projectConfig.Authors |> Array.toList
@@ -140,7 +143,7 @@ Target "Package" (fun _ ->
                     Publish = hasBuildParam "nugetkey"
                     Dependencies = getDependencies (projectRoot +/ "packages.config")
                     Files = [
-                        (("**\*.*"), None, None)
+                        (("**/*.*"), None, None)
                     ]
                 })
                     nuspecPath
@@ -167,9 +170,11 @@ Target "BuildAll" (fun _ ->
 "Clean"
     ==> "CreatePrerequisitePackages"
     ==> "AssemblyInfo"
-    ==> "LogConfigUpdate"
     ==> "RestorePackages"
     ==> "BuildAll"
+
+"BuildAll"
+    ==> "TestAll"
 
 "TestAll"
 

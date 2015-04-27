@@ -6,7 +6,7 @@
     "authors": [ "Serge Fomin" ],
     "company": "MassTransit",
     "copyright": "Copyright © Serge Fomin 2015",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "tags": "MassTransit ServiceBus Couchbase NoSql dotnet .net",
     "buildArtifacts": [ "bin", "obj" ]
 }

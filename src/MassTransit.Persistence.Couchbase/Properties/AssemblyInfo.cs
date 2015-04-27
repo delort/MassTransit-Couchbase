@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompanyAttribute("MassTransit")]
 [assembly: AssemblyDescriptionAttribute("Couchbase persistent storage for MassTransit Sagas")]
 [assembly: AssemblyCopyrightAttribute("Copyright © Serge Fomin 2015")]
-[assembly: AssemblyVersionAttribute("1.0.10")]
-[assembly: AssemblyFileVersionAttribute("1.0.10")]
+[assembly: AssemblyVersionAttribute("1.0.11")]
+[assembly: AssemblyFileVersionAttribute("1.0.11")]
 [assembly: ComVisibleAttribute(false)]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "1.0.10";
+        internal const string Version = "1.0.11";
     }
 }
