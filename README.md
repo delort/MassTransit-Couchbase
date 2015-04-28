@@ -16,7 +16,7 @@ Use other targets if needed:
  - **LogConfigUpdate**: sync log configuration file (log4net.config) with project settings (project.json);
  - **RestorePackages**: restore nuget packages used in solution/projects;
  - **BuildAll**: run build;
- - **Package**: create nuget packages using project settings and *.nuspec file if it exists in the project root;
+ - **Package**: create nuget packages using project settings and \*.nuspec file if it exists in the project root;
  - **TestAll**: run xUnit 2.0 tests with xunit.console runner;
 
 Build scripts implemented with [FAKE - F# Make](http://fsharp.github.io/FAKE/ "Go to FAKE website").
