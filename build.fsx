@@ -4,29 +4,15 @@
 #r @"FakeLib.dll"
 #r @"FSharp.Data.dll"
 
+#load @"./buildConfig.fsx"
+open BuildConfig
+
 open Fake
 open System.IO
 open System.Xml
 open FSharp.Data
 
 let (+/) firstPath secondPath = Path.Combine(firstPath, secondPath)
-
-type ProjectConfigurationType = JsonProvider<"./src/MassTransit.Persistence.Couchbase/project.json">
-
-let projectConfigurations =
-    dict [
-        ("./src/MassTransit.Persistence.Couchbase/",
-            ProjectConfigurationType.Load("./src/MassTransit.Persistence.Couchbase/project.json"));
-        ]
-
-let testProjectConfigurations =
-    [
-        "./src/MassTransit.Persistence.Couchbase.Tests/"
-    ]
-
-let prereqPackageConfigurations =
-    dict [
-        ]
 
 let outputPath = "./out/"
 let packagingPath = "./build/"
@@ -40,25 +26,27 @@ Target "Clean" (fun _ ->
     DeleteDir outputPath
     CreateDir outputPath
 
-    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
+    for KeyValue(projectRoot, projectConfig) in BuildConfig.Projects do
         for path in projectConfig.BuildArtifacts do DeleteDir(projectRoot +/ path)
 )
 
-open Fake.NuGetHelper
-
-Target "CreatePrerequisitePackages" (fun _ ->
-    for KeyValue(packageWorkDir, packageNuSpec) in prereqPackageConfigurations do
-        NuGet (fun p ->
-            {p with
-                OutputPath = outputPath
-                WorkingDir = packageWorkDir})
-            packageNuSpec
-)
+////
+////open Fake.NuGetHelper
+////
+////Target "CreatePrerequisitePackages" (fun _ ->
+////    for KeyValue(packageWorkDir, packageNuSpec) in BuildConfig.PrerequisitePackages do
+////        NuGet (fun p ->
+////            {p with
+////                OutputPath = outputPath
+////                WorkingDir = packageWorkDir})
+////            packageNuSpec
+////)
+////
 
 open Fake.AssemblyInfoFile
 
 Target "AssemblyInfo" (fun _ ->
-    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
+    for KeyValue(projectRoot, projectConfig) in BuildConfig.Projects do
         let assemblyInfoFile = string(projectRoot +/ "Properties/AssemblyInfo.cs")
         CreateCSharpAssemblyInfo
             assemblyInfoFile
@@ -77,7 +65,7 @@ Target "AssemblyInfo" (fun _ ->
 open Fake.XMLHelper
 
 Target "LogConfigUpdate" (fun _ ->
-    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
+    for KeyValue(projectRoot, projectConfig) in BuildConfig.Projects do
         let logConfigFileName = projectRoot +/ "log4net.config"
         if File.Exists(logConfigFileName) then
             let logConfigFile = string(logConfigFileName)
@@ -104,7 +92,7 @@ Target "RestorePackages" (fun _ ->
 open Fake.XUnit2Helper
 
 Target "TestAll" (fun _ ->
-    for testProject in testProjectConfigurations do
+    for testProject in BuildConfig.Tests do
         !! (testProject +/ "bin" +/ "*.Tests.dll")
             |> xUnit2 (fun p -> {p with OutputDir = testProject })
 )
@@ -112,7 +100,7 @@ Target "TestAll" (fun _ ->
 open Fake.NuGetHelper
 
 Target "Package" (fun _ ->
-    for KeyValue(projectRoot, projectConfig) in projectConfigurations do
+    for KeyValue(projectRoot, projectConfig) in BuildConfig.Projects do
         let nuspecPath = projectRoot +/ (projectConfig.Title + ".nuspec")
         if File.Exists(nuspecPath) then
             let productPackagingPath = packagingPath +/ projectConfig.Title
@@ -122,11 +110,9 @@ Target "Package" (fun _ ->
             CleanDirs [libNet45PackagePath]
 
             CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".dll")
+            CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".pdb")
             CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".xml")
             CopyFiles productPackagingPath ["README.md"; "LICENSE.txt"]
-
-            if File.Exists((libNet45BuildPath +/ projectConfig.Title + ".pdb")) then
-                CopyFile libNet45PackagePath (libNet45BuildPath +/ projectConfig.Title + ".pdb")
 
             NuGet (fun p ->
                 {p with
@@ -143,7 +129,7 @@ Target "Package" (fun _ ->
                     Publish = hasBuildParam "nugetkey"
                     Dependencies = getDependencies (projectRoot +/ "packages.config")
                     Files = [
-                        (("**/*.*"), None, None)
+                        (("**\*.*"), None, None)
                     ]
                 })
                     nuspecPath
@@ -163,12 +149,13 @@ Target "BuildAll" (fun _ ->
                 ]
          }
 
-    build buildParams "./src/MassTransit.Persistence.Couchbase.sln"
-        |> DoNothing
+    for solutionPath in BuildConfig.Solutions do
+        build buildParams solutionPath
+            |> DoNothing
 )
 
 "Clean"
-    ==> "CreatePrerequisitePackages"
+////    ==> "CreatePrerequisitePackages"
     ==> "AssemblyInfo"
     ==> "RestorePackages"
     ==> "BuildAll"

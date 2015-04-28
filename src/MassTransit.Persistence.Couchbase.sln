@@ -9,8 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.Cou
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{972D9A66-32DF-4F4A-9EFC-84EF5B63FEAC}"
 	ProjectSection(SolutionItems) = preProject
+		..\.travis.yml = ..\.travis.yml
 		..\build.bat = ..\build.bat
 		..\build.fsx = ..\build.fsx
+		..\build.sh = ..\build.sh
+		..\buildConfig.fsx = ..\buildConfig.fsx
+		..\nuget.config = ..\nuget.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{8AF33233-6475-47CC-9193-61D5BF2CC065}"
