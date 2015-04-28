@@ -31,5 +31,4 @@ mono "./src/.nuget/NuGet.exe" Install FSharp.Data -OutputDirectory build -Exclud
 #  exit /b %errorlevel%
 #)
 
-ls -Ra1
-mono "./build/FAKE/tools/Fake.exe" build.fsx $1 --logfile build.log
+mono "./build/FAKE/tools/FAKE.exe" build.fsx $1 --logfile build.log
