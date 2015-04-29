@@ -1,4 +1,6 @@
-# MassTransit-Couchbase [![Build Status](https://travis-ci.org/sergef/MassTransit-Couchbase.svg)](https://travis-ci.org/sergef/MassTransit-Couchbase)
+# MassTransit-Couchbase
+[![Travis Build Status](https://img.shields.io/travis/sergef/MassTransit-Couchbase.svg)](https://travis-ci.org/sergef/MassTransit-Couchbase)
+[![NuGet Package](https://img.shields.io/nuget/v/MassTransit.Persistence.Couchbase.svg)](https://www.nuget.org/packages/MassTransit.Persistence.Couchbase)
 
 Couchbase persistent storage implementation for MassTransit.
 
